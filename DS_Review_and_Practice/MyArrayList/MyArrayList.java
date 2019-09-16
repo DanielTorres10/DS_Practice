@@ -15,16 +15,24 @@ public class MyArrayList<E> implements List<E> {
 	public MyArrayList(){
 		this(CAP); 
 	}
+	
 	@Override
-	public boolean add(E arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean add(E e) {
+		if(size == data.length) this.resize(data.length*2);
+		data[size] = e; 
+		size++;
+		return true;
 	}
 
 	@Override
-	public void add(int arg0, E arg1) {
-		// TODO Auto-generated method stub
-		
+	public void add(int i, E e) throws IndexOutOfBoundsException {
+		this.checkIndex(i, size);
+		if(size == data.length) this.resize(data.length*2);
+		for(int k = size-1; k >= i;k--) {
+			data[k+1] = data[k];
+		}
+		data[i] = e;	
+		size++;
 	}
 
 	@Override
@@ -46,8 +54,12 @@ public class MyArrayList<E> implements List<E> {
 	}
 
 	@Override
-	public boolean contains(Object arg0) {
-		// TODO Auto-generated method stub
+	public boolean contains(Object o) {
+		for(int i=0;i<data.length;i++) {
+			if(this.get(i).equals(o)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -58,11 +70,14 @@ public class MyArrayList<E> implements List<E> {
 	}
 
 	@Override
-	public E get(int arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public E get(int i) throws IndexOutOfBoundsException {
+		checkIndex(i,size);
+		return data[i];
 	}
 
+	protected void checkIndex(int i, int size) {
+		if(i<0 || i>=size) throw new IndexOutOfBoundsException("Index: "+i+" not in range");	
+	} 
 	@Override
 	public int indexOf(Object arg0) {
 		// TODO Auto-generated method stub
@@ -71,8 +86,7 @@ public class MyArrayList<E> implements List<E> {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return size==0;
 	}
 
 	@Override
@@ -106,10 +120,16 @@ public class MyArrayList<E> implements List<E> {
 	}
 
 	@Override
-	public E remove(int arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	 public E remove(int i) throws IndexOutOfBoundsException { 
+		checkIndex(i, size);
+	 	E temp = data[i];
+	 	for (int k=i; k < size-1; k++) { // shift elements to fill hole
+	 		data[k] = data[k+1];
+	 	}
+	 	data[size-1] = null; // help garbage collection
+	 	size--;
+	 	return temp;
+	 }
 
 	@Override
 	public boolean removeAll(Collection<?> arg0) {
@@ -124,15 +144,16 @@ public class MyArrayList<E> implements List<E> {
 	}
 
 	@Override
-	public E set(int arg0, E arg1) {
-		// TODO Auto-generated method stub
-		return null;
+	public E set(int i, E e) throws IndexOutOfBoundsException  {
+		this.checkIndex(i, size);
+		E temp = data[i];
+		data[i] = e;
+		return temp;
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	@Override
@@ -153,5 +174,12 @@ public class MyArrayList<E> implements List<E> {
 		return null;
 	}
 	
+	protected void resize(int capacity) {
+		E[] temp = (E[]) new Object[capacity]; // new array with bigger size
+		for(int k=0; k<size; k++) {
+			temp[k]=data[k];
+		}
+		data = temp;
+	}
 
 }
